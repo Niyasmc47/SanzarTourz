@@ -30,6 +30,7 @@ export const Admin: React.FC = () => {
   const { 
     siteConfig, 
     packages, 
+    isMongoConnected,
     updateSiteConfig, 
     addPackage, 
     updatePackage, 
@@ -272,11 +273,19 @@ export const Admin: React.FC = () => {
             <div>
               <div className="flex items-center gap-2">
                 <span className="font-serif text-lg font-bold text-white">Sanzar Tourz Admin</span>
-                <span className="px-2 py-0.5 text-[10px] uppercase font-bold tracking-wider rounded bg-teal-500/20 text-teal-300 border border-teal-500/30">
-                  Live Editor
+                <span className={`px-2 py-0.5 text-[10px] uppercase font-bold tracking-wider rounded border ${
+                  isMongoConnected 
+                    ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30' 
+                    : 'bg-teal-500/20 text-teal-300 border-teal-500/30'
+                }`}>
+                  {isMongoConnected ? '● MongoDB Connected' : 'Live Sync'}
                 </span>
               </div>
-              <p className="text-[11px] text-slate-400">All changes reflect live on the website immediately</p>
+              <p className="text-[11px] text-slate-400">
+                {isMongoConnected 
+                  ? 'Synced live with MongoDB Atlas database' 
+                  : 'Live updates active (Configure MONGODB_URI in Vercel/env to enable Cloud DB)'}
+              </p>
             </div>
           </div>
 

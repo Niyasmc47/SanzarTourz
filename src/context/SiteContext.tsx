@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
 import { SiteConfig, TourPackage } from '../types';
 import { siteConfig as defaultSiteConfig } from '../config/siteConfig';
 import { tourPackages as defaultPackages } from '../data/packages';
@@ -6,11 +6,13 @@ import { tourPackages as defaultPackages } from '../data/packages';
 interface SiteContextType {
   siteConfig: SiteConfig;
   packages: TourPackage[];
-  updateSiteConfig: (newConfig: SiteConfig) => void;
-  addPackage: (newPackage: TourPackage) => void;
-  updatePackage: (id: string, updated: Partial<TourPackage>) => void;
-  deletePackage: (id: string) => void;
-  resetToDefaults: () => void;
+  isLoading: boolean;
+  isMongoConnected: boolean;
+  updateSiteConfig: (newConfig: SiteConfig) => Promise<void>;
+  addPackage: (newPackage: TourPackage) => Promise<void>;
+  updatePackage: (id: string, updated: Partial<TourPackage>) => Promise<void>;
+  deletePackage: (id: string) => Promise<void>;
+  resetToDefaults: () => Promise<void>;
   adminPassword: string;
   updateAdminPassword: (newPassword: string) => void;
   isAuthenticated: boolean;
@@ -27,6 +29,9 @@ const AUTH_STORAGE_KEY = 'sanzar_admin_authenticated';
 const DEFAULT_PASSWORD = 'sanzar2026';
 
 export const SiteProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const [isLoading, setIsLoading] = useState(true);
+  const [isMongoConnected, setIsMongoConnected] = useState(false);
+
   // 1. Site configuration state
   const [siteConfig, setSiteConfig] = useState<SiteConfig>(() => {
     try {
@@ -69,48 +74,142 @@ export const SiteProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   });
 
-  // Sync site config to localStorage
-  const updateSiteConfig = (newConfig: SiteConfig) => {
+  // Fetch from MongoDB API on initial mount
+  useEffect(() => {
+    let isMounted = true;
+
+    async function loadDataFromApi() {
+      try {
+        // Fetch Packages
+        const pkgRes = await fetch('/api/packages');
+        if (pkgRes.ok) {
+          const pkgData = await pkgRes.json();
+          if (pkgData.success && Array.isArray(pkgData.packages) && pkgData.packages.length > 0) {
+            if (isMounted) {
+              setPackages(pkgData.packages);
+              localStorage.setItem(PACKAGES_STORAGE_KEY, JSON.stringify(pkgData.packages));
+              setIsMongoConnected(true);
+            }
+          }
+        }
+
+        // Fetch Config
+        const cfgRes = await fetch('/api/config');
+        if (cfgRes.ok) {
+          const cfgData = await cfgRes.json();
+          if (cfgData.success && cfgData.config) {
+            if (isMounted) {
+              setSiteConfig(cfgData.config);
+              localStorage.setItem(CONFIG_STORAGE_KEY, JSON.stringify(cfgData.config));
+              setIsMongoConnected(true);
+            }
+          }
+        }
+      } catch (err) {
+        // Silently fallback to localStorage or code defaults if API isn't hosted locally or offline
+        console.log('MongoDB API unreachable or running standalone frontend. Using local cache.');
+      } finally {
+        if (isMounted) setIsLoading(false);
+      }
+    }
+
+    loadDataFromApi();
+    return () => { isMounted = false; };
+  }, []);
+
+  // Update site configuration
+  const updateSiteConfig = async (newConfig: SiteConfig) => {
     setSiteConfig(newConfig);
     try {
       localStorage.setItem(CONFIG_STORAGE_KEY, JSON.stringify(newConfig));
     } catch (e) {
-      console.error('Failed to save site config to localStorage:', e);
+      console.error('Failed to save to localStorage:', e);
     }
-  };
 
-  // Sync packages to localStorage
-  const savePackages = (newPackages: TourPackage[]) => {
-    setPackages(newPackages);
+    // Attempt MongoDB sync
     try {
-      localStorage.setItem(PACKAGES_STORAGE_KEY, JSON.stringify(newPackages));
-    } catch (e) {
-      console.error('Failed to save packages to localStorage:', e);
+      const res = await fetch('/api/config', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newConfig)
+      });
+      if (res.ok) setIsMongoConnected(true);
+    } catch {
+      // Offline fallback
     }
   };
 
   // Add new package
-  const addPackage = (newPackage: TourPackage) => {
+  const addPackage = async (newPackage: TourPackage) => {
     const updated = [newPackage, ...packages];
-    savePackages(updated);
+    setPackages(updated);
+    try {
+      localStorage.setItem(PACKAGES_STORAGE_KEY, JSON.stringify(updated));
+    } catch (e) {
+      console.error('Failed to save packages to localStorage:', e);
+    }
+
+    // Attempt MongoDB sync
+    try {
+      const res = await fetch('/api/packages', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newPackage)
+      });
+      if (res.ok) setIsMongoConnected(true);
+    } catch {
+      // Offline fallback
+    }
   };
 
   // Update existing package
-  const updatePackage = (id: string, updated: Partial<TourPackage>) => {
-    const updatedList = packages.map((pkg) =>
-      pkg.id === id ? { ...pkg, ...updated } : pkg
-    );
-    savePackages(updatedList);
+  const updatePackage = async (id: string, updated: Partial<TourPackage>) => {
+    const target = packages.find((p) => p.id === id);
+    const fullUpdated = { ...target, ...updated } as TourPackage;
+    const updatedList = packages.map((pkg) => (pkg.id === id ? fullUpdated : pkg));
+    setPackages(updatedList);
+
+    try {
+      localStorage.setItem(PACKAGES_STORAGE_KEY, JSON.stringify(updatedList));
+    } catch (e) {
+      console.error('Failed to save packages to localStorage:', e);
+    }
+
+    // Attempt MongoDB sync
+    try {
+      const res = await fetch('/api/packages', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(fullUpdated)
+      });
+      if (res.ok) setIsMongoConnected(true);
+    } catch {
+      // Offline fallback
+    }
   };
 
   // Delete package
-  const deletePackage = (id: string) => {
+  const deletePackage = async (id: string) => {
     const updatedList = packages.filter((pkg) => pkg.id !== id);
-    savePackages(updatedList);
+    setPackages(updatedList);
+    try {
+      localStorage.setItem(PACKAGES_STORAGE_KEY, JSON.stringify(updatedList));
+    } catch (e) {
+      console.error('Failed to save packages to localStorage:', e);
+    }
+
+    // Attempt MongoDB sync
+    try {
+      await fetch(`/api/packages?id=${encodeURIComponent(id)}`, {
+        method: 'DELETE'
+      });
+    } catch {
+      // Offline fallback
+    }
   };
 
   // Reset to original code defaults
-  const resetToDefaults = () => {
+  const resetToDefaults = async () => {
     localStorage.removeItem(CONFIG_STORAGE_KEY);
     localStorage.removeItem(PACKAGES_STORAGE_KEY);
     setSiteConfig(defaultSiteConfig);
@@ -156,6 +255,8 @@ export const SiteProvider: React.FC<{ children: React.ReactNode }> = ({ children
       value={{
         siteConfig,
         packages,
+        isLoading,
+        isMongoConnected,
         updateSiteConfig,
         addPackage,
         updatePackage,
