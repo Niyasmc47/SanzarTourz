@@ -64,3 +64,4 @@ I would love to learn more about your travel planning services and tour packages
 
   return createWhatsAppUrl(message);
 }
+

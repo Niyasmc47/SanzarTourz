@@ -652,3 +652,4 @@ export const popularDestinations: DestinationCard[] = [
     isIllustrativeOnly: true
   }
 ];
+

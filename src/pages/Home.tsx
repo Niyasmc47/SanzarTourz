@@ -20,6 +20,7 @@ import { TourPackage } from '../types';
 import { PackageCard } from '../components/PackageCard';
 import { PackageModal } from '../components/PackageModal';
 import { getGeneralEnquiryUrl } from '../utils/whatsapp';
+import heroImage from '../assets/hero.jpeg';
 
 export const Home: React.FC = () => {
   const [selectedPackage, setSelectedPackage] = useState<TourPackage | null>(null);
@@ -33,29 +34,30 @@ export const Home: React.FC = () => {
       {/* =========================================================================
           SECTION B: HERO SECTION
           ========================================================================= */}
-      <section className="relative min-h-[580px] lg:min-h-[680px] flex items-center bg-navy-950 text-white overflow-hidden">
-        {/* Hero Background Image with Subtle Parallax feel & dark luxury overlay */}
+      <section className="relative min-h-[580px] lg:min-h-[680px] flex items-center bg-slate-900 text-white overflow-hidden">
+        {/* Hero Background Image with Subtle, Light Overlay */}
         <div className="absolute inset-0">
           <img
-            src="https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&w=2000&q=80"
-            alt="Scenic mountain road journey"
-            className="w-full h-full object-cover object-center opacity-35"
+            src={heroImage}
+            alt="Sanzar Tourz - Discover the World"
+            className="w-full h-full object-cover object-center"
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-navy-950 via-navy-950/85 to-navy-950/60" />
-          <div className="absolute inset-0 bg-gradient-to-t from-navy-950 via-transparent to-transparent" />
+          {/* Gentle, reduced overlay ensuring photo vibrancy while keeping text legible */}
+          <div className="absolute inset-0 bg-gradient-to-r from-navy-950/60 via-navy-950/30 to-transparent" />
+          <div className="absolute inset-0 bg-black/10" />
         </div>
 
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 lg:py-28 z-10 w-full">
           <div className="max-w-3xl space-y-6">
             
             {/* Brand Accent Pill */}
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-teal-500/10 border border-teal-400/30 text-teal-300 text-xs sm:text-sm font-semibold tracking-wide">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-navy-950/40 backdrop-blur-md border border-teal-400/40 text-teal-300 text-xs sm:text-sm font-semibold tracking-wide shadow-sm">
               <span className="w-2 h-2 rounded-full bg-teal-400 animate-pulse"></span>
               <span>Palakkad, Kerala • {siteConfig.brandSlogan}</span>
             </div>
 
             {/* Headline */}
-            <h1 className="font-serif text-3xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-white leading-[1.15]">
+            <h1 className="font-serif text-3xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-white leading-[1.15] drop-shadow-md">
               Discover the World. <br className="hidden sm:inline" />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-teal-300 via-teal-200 to-white">
                 Find Your Escape.
@@ -63,7 +65,7 @@ export const Home: React.FC = () => {
             </h1>
 
             {/* Supporting Text */}
-            <p className="text-slate-300 text-base sm:text-lg sm:leading-relaxed max-w-2xl font-normal">
+            <p className="text-slate-100 text-base sm:text-lg sm:leading-relaxed max-w-2xl font-normal drop-shadow">
               Welcome to <strong className="text-white font-semibold">{siteConfig.brandName}</strong>, your boutique travel planner based in Palakkad, Kerala. We craft thoughtfully designed domestic and international journeys, tailored to let you relax, explore, and rejuvenate.
             </p>
 

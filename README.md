@@ -161,3 +161,4 @@ Each tour package object allows you to customize:
 3. Select your repository. Vercel will automatically detect **Vite**.
 4. The included `vercel.json` ensures direct page refreshes (e.g., `/international-tours`) work seamlessly with client-side routing.
 5. Click **"Deploy"**. Your site is live!
+

@@ -170,3 +170,4 @@ export const IndiaTours: React.FC = () => {
     </div>
   );
 };
+

@@ -43,3 +43,4 @@ export interface CustomTripFormData {
   estimatedBudget: string;
   preferences: string;
 }
+
