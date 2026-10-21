@@ -44,3 +44,37 @@ export interface CustomTripFormData {
   preferences: string;
 }
 
+export interface SiteConfig {
+  brandName: string;
+  brandSlogan: string;
+  baseLocation: {
+    city: string;
+    state: string;
+    country: string;
+    formattedAddress: string;
+    shortLocation: string;
+  };
+  contact: {
+    whatsappNumber: string;
+    whatsappDisplayNumber: string;
+    phoneNumber: string;
+    email: string;
+    workingHours: string;
+    workingDaysNotice: string;
+  };
+  socialLinks: {
+    instagram: string;
+    facebook: string;
+    whatsappChannel: string;
+  };
+  about: {
+    tagline: string;
+    shortBio: string;
+    story: string;
+    philosophy: string;
+    values: {
+      title: string;
+      description: string;
+    }[];
+  };
+}

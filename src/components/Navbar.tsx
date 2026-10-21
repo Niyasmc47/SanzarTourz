@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { NavLink, Link, useLocation } from 'react-router-dom';
-import { Menu, X, MessageCircle, Compass, Phone } from 'lucide-react';
-import { siteConfig } from '../config/siteConfig';
+import { Menu, X, MessageCircle, Compass, Phone, Shield } from 'lucide-react';
+import { useSite } from '../context/SiteContext';
 import { getGeneralEnquiryUrl } from '../utils/whatsapp';
 
 export const Navbar: React.FC = () => {
+  const { siteConfig } = useSite();
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const location = useLocation();
@@ -53,6 +54,15 @@ export const Navbar: React.FC = () => {
               <Phone className="w-3 h-3" />
               <span>{siteConfig.contact.whatsappDisplayNumber}</span>
             </a>
+            <span className="text-navy-700 hidden sm:inline">|</span>
+            <Link
+              to="/admin"
+              className="text-slate-400 hover:text-teal-400 font-medium inline-flex items-center gap-1 transition-colors text-[11px]"
+              title="Admin Portal"
+            >
+              <Shield className="w-3 h-3" />
+              <span>Admin</span>
+            </Link>
           </div>
         </div>
       </div>

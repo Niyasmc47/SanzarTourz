@@ -1,19 +1,20 @@
 import React, { useState, useMemo } from 'react';
 import { Search, MapPin, Filter, MessageCircle, AlertCircle } from 'lucide-react';
-import { tourPackages } from '../data/packages';
 import { TourPackage } from '../types';
+import { useSite } from '../context/SiteContext';
 import { PackageCard } from '../components/PackageCard';
 import { PackageModal } from '../components/PackageModal';
 import { getGeneralEnquiryUrl } from '../utils/whatsapp';
 
 export const IndiaTours: React.FC = () => {
+  const { packages } = useSite();
   const [selectedPackage, setSelectedPackage] = useState<TourPackage | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [budgetFilter, setBudgetFilter] = useState<'all' | 'under25k' | 'above25k'>('all');
 
   const indiaPackages = useMemo(() => {
-    return tourPackages.filter((pkg) => pkg.category === 'india');
-  }, []);
+    return packages.filter((pkg) => pkg.category === 'india');
+  }, [packages]);
 
   const filteredPackages = useMemo(() => {
     return indiaPackages.filter((pkg) => {

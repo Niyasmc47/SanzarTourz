@@ -14,19 +14,21 @@ import {
   ShieldCheck,
   ChevronRight
 } from 'lucide-react';
-import { siteConfig } from '../config/siteConfig';
-import { tourPackages, popularDestinations } from '../data/packages';
+import { popularDestinations } from '../data/packages';
 import { TourPackage } from '../types';
+import { useSite } from '../context/SiteContext';
 import { PackageCard } from '../components/PackageCard';
 import { PackageModal } from '../components/PackageModal';
 import { getGeneralEnquiryUrl } from '../utils/whatsapp';
 import heroImage from '../assets/hero.jpeg';
 
 export const Home: React.FC = () => {
+  const { siteConfig, packages } = useSite();
   const [selectedPackage, setSelectedPackage] = useState<TourPackage | null>(null);
 
-  // Filter featured packages for homepage
-  const featuredPackages = tourPackages.filter((pkg) => pkg.featured);
+  // Filter featured packages for homepage (fallback to first 4 if none explicitly marked featured)
+  const featured = packages.filter((pkg) => pkg.featured);
+  const featuredPackages = featured.length > 0 ? featured : packages.slice(0, 4);
 
   return (
     <div className="flex flex-col min-h-screen">

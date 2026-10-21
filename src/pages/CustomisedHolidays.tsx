@@ -14,9 +14,10 @@ import {
 } from 'lucide-react';
 import { CustomTripFormData } from '../types';
 import { getCustomTripEnquiryUrl } from '../utils/whatsapp';
-import { siteConfig } from '../config/siteConfig';
+import { useSite } from '../context/SiteContext';
 
 export const CustomisedHolidays: React.FC = () => {
+  const { siteConfig } = useSite();
   const [searchParams] = useSearchParams();
 
   const [formData, setFormData] = useState<CustomTripFormData>({

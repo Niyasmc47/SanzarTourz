@@ -55,6 +55,13 @@ A modern, visually attractive, and responsive travel agency website for **Sanzar
    - Operating hours and social media links
    - Fast inquiry composer that sends directly to WhatsApp
 
+7. **Admin Portal (`/admin`)**
+   - **Password-Protected & Secure:** Gated with session authentication (Default Password: `sanzar2026`).
+   - **Tour Packages Management:** Add, edit, or delete domestic & international packages with day-by-day itineraries, inclusions, exclusions, and pricing.
+   - **Contact & WhatsApp Manager:** Change WhatsApp number, display text, phone, email, address, and working hours with immediate site-wide reflection.
+   - **Brand & Content Editor:** Change brand slogan, story, and values dynamically.
+   - **Backup & Security:** Change admin password, export/import JSON backup files, or reset to factory defaults.
+
 ---
 
 ## 🛠️ Project Structure

@@ -8,10 +8,11 @@ import {
   ArrowRight,
   SunMedium
 } from 'lucide-react';
-import { siteConfig } from '../config/siteConfig';
+import { useSite } from '../context/SiteContext';
 import { getGeneralEnquiryUrl } from '../utils/whatsapp';
 
 export const AboutUs: React.FC = () => {
+  const { siteConfig } = useSite();
   return (
     <div className="min-h-screen bg-slate-50 py-12 sm:py-16">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

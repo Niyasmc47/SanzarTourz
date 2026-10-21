@@ -1,10 +1,11 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Compass, MapPin, Phone, Mail, MessageCircle } from 'lucide-react';
-import { siteConfig } from '../config/siteConfig';
+import { Compass, MapPin, Phone, Mail, MessageCircle, Lock } from 'lucide-react';
+import { useSite } from '../context/SiteContext';
 import { getGeneralEnquiryUrl } from '../utils/whatsapp';
 
 export const Footer: React.FC = () => {
+  const { siteConfig } = useSite();
   return (
     <footer className="bg-navy-950 text-slate-300 pt-16 pb-10 border-t border-navy-800">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -140,9 +141,19 @@ export const Footer: React.FC = () => {
           <p>
             &copy; {new Date().getFullYear()} {siteConfig.brandName}. All rights reserved. Based in Palakkad, Kerala.
           </p>
-          <div className="flex items-center gap-1 text-slate-400">
-            <span>Slogan:</span>
-            <span className="text-teal-400 font-medium">{siteConfig.brandSlogan}</span>
+          <div className="flex items-center gap-4 text-slate-400">
+            <div className="flex items-center gap-1">
+              <span>Slogan:</span>
+              <span className="text-teal-400 font-medium">{siteConfig.brandSlogan}</span>
+            </div>
+            <span>•</span>
+            <Link
+              to="/admin"
+              className="text-slate-500 hover:text-teal-400 flex items-center gap-1 transition-colors"
+            >
+              <Lock className="w-3 h-3" />
+              <span>Admin Portal</span>
+            </Link>
           </div>
         </div>
       </div>

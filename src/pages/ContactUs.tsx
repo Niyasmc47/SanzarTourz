@@ -9,10 +9,11 @@ import {
   Facebook, 
   ShieldAlert
 } from 'lucide-react';
-import { siteConfig } from '../config/siteConfig';
+import { useSite } from '../context/SiteContext';
 import { createWhatsAppUrl, getGeneralEnquiryUrl } from '../utils/whatsapp';
 
 export const ContactUs: React.FC = () => {
+  const { siteConfig } = useSite();
   const [quickName, setQuickName] = useState('');
   const [quickTopic, setQuickTopic] = useState('Tour Package Enquiry');
   const [quickMessage, setQuickMessage] = useState('');

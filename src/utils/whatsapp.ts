@@ -2,10 +2,29 @@ import { siteConfig } from '../config/siteConfig';
 import { CustomTripFormData, TourPackage } from '../types';
 
 /**
+ * Resolves the currently active WhatsApp number from localStorage or default configuration.
+ */
+export function getActiveWhatsAppNumber(customNumber?: string): string {
+  if (customNumber) return customNumber;
+  try {
+    const saved = localStorage.getItem('sanzar_tourz_site_config');
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      if (parsed?.contact?.whatsappNumber) {
+        return parsed.contact.whatsappNumber;
+      }
+    }
+  } catch {
+    // fallback to static config
+  }
+  return siteConfig.contact.whatsappNumber;
+}
+
+/**
  * Generates a direct WhatsApp click-to-chat URL with URL-encoded prefilled message.
  */
 export function createWhatsAppUrl(message: string, customNumber?: string): string {
-  const number = (customNumber || siteConfig.contact.whatsappNumber).replace(/\D/g, '');
+  const number = getActiveWhatsAppNumber(customNumber).replace(/\D/g, '');
   const encodedText = encodeURIComponent(message.trim());
   return `https://wa.me/${number}?text=${encodedText}`;
 }
@@ -13,7 +32,7 @@ export function createWhatsAppUrl(message: string, customNumber?: string): strin
 /**
  * Builds a WhatsApp message for a specific Tour Package inquiry.
  */
-export function getPackageEnquiryUrl(pkg: TourPackage): string {
+export function getPackageEnquiryUrl(pkg: TourPackage, customNumber?: string): string {
   const priceText = pkg.pricePerPerson 
     ? `₹${pkg.pricePerPerson.toLocaleString('en-IN')} per person`
     : 'Price on request';
@@ -28,13 +47,13 @@ I am interested in your tour package:
 
 Could you please share more details, upcoming available dates, and customized pricing for my group? Thank you!`;
 
-  return createWhatsAppUrl(message);
+  return createWhatsAppUrl(message, customNumber);
 }
 
 /**
  * Builds a WhatsApp message for a Customised Holiday request.
  */
-export function getCustomTripEnquiryUrl(data: CustomTripFormData): string {
+export function getCustomTripEnquiryUrl(data: CustomTripFormData, customNumber?: string): string {
   const message = `Hello Sanzar Tourz! ✈️
 
 I would like to request a Customised Holiday plan:
@@ -50,18 +69,17 @@ I would like to request a Customised Holiday plan:
 
 Looking forward to your suggestions and a personalised itinerary!`;
 
-  return createWhatsAppUrl(message);
+  return createWhatsAppUrl(message, customNumber);
 }
 
 /**
  * Builds a WhatsApp message for general enquiries.
  */
-export function getGeneralEnquiryUrl(subject: string = 'General Inquiry'): string {
+export function getGeneralEnquiryUrl(subject: string = 'General Inquiry', customNumber?: string): string {
   const message = `Hello Sanzar Tourz! 👋
 
 I am contacting you from your website regarding ${subject}.
 I would love to learn more about your travel planning services and tour packages.`;
 
-  return createWhatsAppUrl(message);
+  return createWhatsAppUrl(message, customNumber);
 }
-

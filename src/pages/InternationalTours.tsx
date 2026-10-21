@@ -1,19 +1,20 @@
 import React, { useState, useMemo } from 'react';
 import { Search, Globe, Filter, MessageCircle, AlertCircle } from 'lucide-react';
-import { tourPackages } from '../data/packages';
 import { TourPackage } from '../types';
+import { useSite } from '../context/SiteContext';
 import { PackageCard } from '../components/PackageCard';
 import { PackageModal } from '../components/PackageModal';
 import { getGeneralEnquiryUrl } from '../utils/whatsapp';
 
 export const InternationalTours: React.FC = () => {
+  const { packages } = useSite();
   const [selectedPackage, setSelectedPackage] = useState<TourPackage | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [budgetFilter, setBudgetFilter] = useState<'all' | 'under50k' | 'above50k'>('all');
 
   const internationalPackages = useMemo(() => {
-    return tourPackages.filter((pkg) => pkg.category === 'international');
-  }, []);
+    return packages.filter((pkg) => pkg.category === 'international');
+  }, [packages]);
 
   const filteredPackages = useMemo(() => {
     return internationalPackages.filter((pkg) => {
