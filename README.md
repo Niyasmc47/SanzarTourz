@@ -9,11 +9,11 @@ A modern, visually attractive, and responsive travel agency website for **Sanzar
 ## 🌟 Overview & Key Features
 
 - **Tech Stack:** React 18, TypeScript, Vite, Tailwind CSS, React Router v6, Lucide React icons.
+- **Backend & Database:** Vercel Serverless Functions (`/api/packages`, `/api/config`) + MongoDB Atlas database.
 - **Modern Luxury Visual Style:** Deep navy typography, clean off-white backgrounds, teal accents, curated travel imagery, and refined card designs.
-- **Zero-Backend Architecture:** Ready for instant static hosting on Vercel without databases or server maintenance.
 - **WhatsApp Integration:** All booking and consultation requests route through click-to-chat links with prefilled, URL-encoded messages tailored per package or custom itinerary inquiry.
-- **Full Responsive Design:** Tailored for seamless viewing across smartphones, tablets, and wide desktop screens.
-- **Non-Technical Maintainability:** Centralized business info and separated data files so business owners can change WhatsApp numbers, contact details, and tour packages in seconds.
+- **Secure Admin Portal (`/admin`):** Password-protected portal to add, edit, or delete tour packages, change WhatsApp numbers, emails, phone numbers, and brand content live.
+- **Vercel Hostable:** Ready for one-click deployment on Vercel with zero server setup required.
 
 ---
 
@@ -21,10 +21,10 @@ A modern, visually attractive, and responsive travel agency website for **Sanzar
 
 1. **Home (`/`)**
    - Brand bar with Palakkad location & slogan
-   - Hero section with inspiring imagery, headline ("Discover the World. Find Your Escape."), and quick CTAs
+   - Hero section with custom imagery, headline (*"Discover the World. Find Your Escape."*), and quick CTAs
    - Featured Tour Packages with pricing in ₹ and direct WhatsApp CTAs
    - Popular Destinations (illustrative travel inspiration cards)
-   - "Why Choose Us?" factual value pillars
+   - *"Why Choose Us?"* factual value pillars
    - Customised Holidays spotlight section
    - Quick contact and Palakkad location details
    - Comprehensive footer with links and hours
@@ -56,82 +56,33 @@ A modern, visually attractive, and responsive travel agency website for **Sanzar
    - Fast inquiry composer that sends directly to WhatsApp
 
 7. **Admin Portal (`/admin`)**
-   - **Password-Protected & Secure:** Gated with session authentication (Default Password: `sanzar2026`).
-   - **Tour Packages Management:** Add, edit, or delete domestic & international packages with day-by-day itineraries, inclusions, exclusions, and pricing.
+   - **Password-Protected & Secure:** Default Password: `sanzar2026`
+   - **Live Tour Packages Management:** Add, edit, or delete domestic & international packages with day-by-day itineraries, inclusions, exclusions, and pricing.
    - **Contact & WhatsApp Manager:** Change WhatsApp number, display text, phone, email, address, and working hours with immediate site-wide reflection.
    - **Brand & Content Editor:** Change brand slogan, story, and values dynamically.
    - **Backup & Security:** Change admin password, export/import JSON backup files, or reset to factory defaults.
 
 ---
 
-## 🛠️ Project Structure
+## 🚀 How to Deploy to Vercel
 
-```
-SanzarTourz/
-├── index.html                 # Entry HTML with Google Fonts (Plus Jakarta Sans & Playfair Display)
-├── package.json               # Dependencies and build scripts
-├── postcss.config.js          # PostCSS configuration
-├── tailwind.config.js         # Custom palette (deep navy, teal, sand) & typography
-├── tsconfig.json              # TypeScript configuration
-├── vercel.json                # Single Page App routing rewrite configuration for Vercel
-├── vite.config.ts             # Vite configuration
-└── src/
-    ├── main.tsx               # React application entry point
-    ├── App.tsx                # React Router setup & global layout
-    ├── index.css              # Tailwind imports and base styles
-    ├── types/
-    │   └── index.ts           # TypeScript interfaces (TourPackage, DestinationCard, etc.)
-    ├── config/
-    │   └── siteConfig.ts      # ⚡ CENTRAL CONFIG: WhatsApp number, phone, email, address, etc.
-    ├── data/
-    │   └── packages.ts        # ⚡ TOUR PACKAGES DATA: Add or edit packages, prices, itineraries
-    ├── utils/
-    │   └── whatsapp.ts        # WhatsApp click-to-chat URL generators
-    ├── components/
-    │   ├── Navbar.tsx         # Brand header with mobile navigation drawer & WhatsApp CTA
-    │   ├── Footer.tsx         # Responsive footer with full navigation & office information
-    │   ├── PackageCard.tsx    # Reusable package card with pricing, duration & CTAs
-    │   ├── PackageModal.tsx   # Detailed modal with full itinerary, inclusions & exclusions
-    │   ├── ScrollToTop.tsx    # Smooth page top reset on route transitions
-    │   └── WhatsAppFloatButton.tsx # Persistent floating WhatsApp button
-    └── pages/
-        ├── Home.tsx
-        ├── InternationalTours.tsx
-        ├── IndiaTours.tsx
-        ├── CustomisedHolidays.tsx
-        ├── AboutUs.tsx
-        └── ContactUs.tsx
-```
+1. Push this repository to GitHub:
+   ```bash
+   git push origin main
+   ```
 
----
+2. Go to [vercel.com](https://vercel.com) and click **"Add New" > "Project"**.
 
-## ⚙️ How to Update Business Information (For Maintainers)
+3. Select your repository (`SanzarTourz`). Vercel will automatically detect **Vite**.
 
-### 1. Updating the WhatsApp Number & Contact Info
-Open [`src/config/siteConfig.ts`](src/config/siteConfig.ts):
-```typescript
-contact: {
-  // Enter number in international format without symbols (e.g. 91 + 10 digits)
-  whatsappNumber: "919876543210", 
-  whatsappDisplayNumber: "+91 98765 43210",
-  phoneNumber: "+91 98765 43210",
-  email: "enquiry@sanzartourz.com",
-}
-```
-Updating this single file automatically updates all buttons, forms, footers, and floating WhatsApp links across the entire website.
+4. **Environment Variables (Optional for MongoDB Cloud Database):**
+   Under **Environment Variables**, add:
+   - `MONGODB_URI`: Your MongoDB Atlas connection string (e.g. `mongodb+srv://<user>:<password>@cluster0.xxxxx.mongodb.net/sanzartourz?retryWrites=true&w=majority`)
+   - `MONGODB_DB`: `sanzartourz` (optional, defaults to `sanzartourz`)
 
-### 2. Adding or Editing Tour Packages
-Open [`src/data/packages.ts`](src/data/packages.ts):
-Each tour package object allows you to customize:
-- `name`: Package title
-- `destination` & `country`
-- `category`: `'international'` or `'india'`
-- `duration`: e.g. `"6 Days / 5 Nights"`
-- `pricePerPerson`: Enter a number in rupees (e.g. `42000`) or `null` for *"Price on request"*
-- `heroImage` & `galleryImages`: Image URLs
-- `highlights`: Array of key features
-- `dayByDayItinerary`: Array of day numbers, titles, and descriptions
-- `inclusions` & `exclusions`: Bullet points for what's covered and what's not
+   *(Note: Even without MongoDB configured, the site works fully out of the box using client-side storage and static defaults!)*
+
+5. Click **"Deploy"**. Your site and serverless API endpoints will be live immediately!
 
 ---
 
@@ -152,20 +103,3 @@ Each tour package object allows you to customize:
    ```bash
    npm run build
    ```
-   Build output will be generated inside the `dist/` directory.
-
-4. **Preview production build locally:**
-   ```bash
-   npm run preview
-   ```
-
----
-
-## 🚀 Deploying to Vercel
-
-1. Push this repository to GitHub / GitLab / Bitbucket.
-2. Sign in to [Vercel](https://vercel.com) and click **"Add New" > "Project"**.
-3. Select your repository. Vercel will automatically detect **Vite**.
-4. The included `vercel.json` ensures direct page refreshes (e.g., `/international-tours`) work seamlessly with client-side routing.
-5. Click **"Deploy"**. Your site is live!
-

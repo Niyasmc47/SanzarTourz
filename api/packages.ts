@@ -1,94 +1,6 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import clientPromise from './lib/mongodb';
-
-// Default fallback packages to seed if database collection is empty
-const defaultPackages = [
-  {
-    id: "pkg-intl-dubai-escape",
-    name: "Dubai City & Desert Experience",
-    destination: "Dubai",
-    country: "United Arab Emirates",
-    category: "international",
-    duration: "5 Days / 4 Nights",
-    featured: true,
-    pricePerPerson: 42000,
-    priceFormatted: "₹42,000",
-    tag: "Popular",
-    shortDescription: "Experience modern architectural marvels, golden desert safaris with dune bashing, and relaxing Marina dhow cruises.",
-    heroImage: "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=1200&q=80",
-    galleryImages: [],
-    highlights: [
-      "Burj Khalifa observation deck experience",
-      "Premium Desert Safari with BBQ dinner & cultural dance show",
-      "Dubai Marina Dhow cruise with buffet dinner",
-      "Guided city tour including Dubai Frame and Gold Souk"
-    ],
-    availableDates: ["Flexible Weekly Departures", "Autumn & Winter Season Batches"],
-    dayByDayItinerary: [
-      { day: 1, title: "Arrival in Dubai & Marina Dhow Cruise", description: "Arrive at Dubai International Airport. Private transfer to your hotel. Evening Marina Dhow Cruise with dinner." },
-      { day: 2, title: "Half-Day City Highlights & Burj Khalifa", description: "Explore the Dubai Frame, Palm Jumeirah, and ascend to Burj Khalifa 124th floor." },
-      { day: 3, title: "Afternoon Red Dune Desert Safari", description: "4x4 dune bashing, camel rides, sandboarding, and an authentic Arabian camp buffet dinner." },
-      { day: 4, title: "Day at Leisure or Optional Abu Dhabi Excursion", description: "Shopping or optional full-day guided trip to Sheikh Zayed Grand Mosque in Abu Dhabi." },
-      { day: 5, title: "Souk Exploration & Departure Transfer", description: "Leisurely breakfast and airport transfer for return flight." }
-    ],
-    inclusions: [
-      "4 Nights accommodation in 4-star city hotel",
-      "Daily international breakfast buffet",
-      "Airport transfers on private basis",
-      "Desert Safari with BBQ dinner & transfers",
-      "Marina Dhow Cruise with dinner",
-      "Burj Khalifa non-peak tickets (124th floor)"
-    ],
-    exclusions: [
-      "International airfare and UAE visa fees",
-      "Tourism Dirham Fee payable at hotel",
-      "Personal expenses and travel insurance"
-    ]
-  },
-  {
-    id: "pkg-in-kashmir-paradise",
-    name: "Jewels of Kashmir",
-    destination: "Srinagar, Gulmarg & Pahalgam",
-    country: "India",
-    category: "india",
-    duration: "6 Days / 5 Nights",
-    featured: true,
-    pricePerPerson: 28500,
-    priceFormatted: "₹28,500",
-    tag: "Bestseller",
-    shortDescription: "Experience heavenly Himalayan valleys, traditional Dal Lake shikara rides, snow-kissed Gulmarg meadows, and pine-clad Pahalgam.",
-    heroImage: "https://images.unsplash.com/photo-1598091383021-15ddea10925d?auto=format&fit=crop&w=1200&q=80",
-    galleryImages: [],
-    highlights: [
-      "Deluxe Houseboat stay on Dal Lake",
-      "1-hour romantic Shikara ride at sunset",
-      "Gulmarg Gondola cable car up to snow line",
-      "Scenic drive through saffron fields to Pahalgam"
-    ],
-    availableDates: ["Departures available spring, summer & winter", "Tulip festival batches"],
-    dayByDayItinerary: [
-      { day: 1, title: "Arrival in Srinagar & Dal Lake Shikara", description: "Meet on arrival at Srinagar Airport. Transfer to your luxury houseboat. Evening Shikara ride." },
-      { day: 2, title: "Mughal Gardens of Srinagar", description: "Visit Shalimar Bagh, Nishat Bagh, and Shankaracharya Temple." },
-      { day: 3, title: "Gulmarg Meadow of Flowers Excursion", description: "Day excursion to Gulmarg. Ride the world-famous Gulmarg Gondola for breathtaking snow views." },
-      { day: 4, title: "Srinagar to Valley of Shepherds, Pahalgam", description: "Drive along the Lidder River to picturesque Pahalgam." },
-      { day: 5, title: "Pahalgam Leisure & Return to Srinagar", description: "Explore local handicraft shops in Pahalgam. Drive back to Srinagar." },
-      { day: 6, title: "Departure from Srinagar", description: "Transfer to Srinagar Airport with sweet memories." }
-    ],
-    inclusions: [
-      "1 Night stay in Premium Dal Lake Houseboat",
-      "3 Nights stay in Srinagar 4-star hotel",
-      "1 Night stay in Pahalgam riverside resort",
-      "Daily breakfast and dinner (MAP plan)",
-      "Exclusive private vehicle for all transfers",
-      "1-Hour Dal Lake Shikara ride"
-    ],
-    exclusions: [
-      "Airfare to/from Srinagar",
-      "Gondola cable car tickets",
-      "Personal expenses and gratuities"
-    ]
-  }
-];
+import { tourPackages } from '../src/data/packages';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   // Set CORS headers
@@ -119,7 +31,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
       // Auto-seed if collection is completely empty
       if (packages.length === 0) {
-        await collection.insertMany(defaultPackages);
+        await collection.insertMany(tourPackages);
         packages = await collection.find({}).toArray();
       }
 
@@ -172,4 +84,3 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(500).json({ success: false, error: 'Failed to interact with database' });
   }
 }
-

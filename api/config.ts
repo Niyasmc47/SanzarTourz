@@ -1,43 +1,6 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import clientPromise from './lib/mongodb';
-
-const defaultConfig = {
-  id: 'site_config',
-  brandName: "Sanzar Tourz",
-  brandSlogan: "Travel. Breathe. Unwind.",
-  baseLocation: {
-    city: "Palakkad",
-    state: "Kerala",
-    country: "India",
-    formattedAddress: "Palakkad, Kerala, India - 678001",
-    shortLocation: "Palakkad, Kerala, India"
-  },
-  contact: {
-    whatsappNumber: "919876543210",
-    whatsappDisplayNumber: "+91 98765 43210",
-    phoneNumber: "+91 98765 43210",
-    email: "enquiry@sanzartourz.com",
-    workingHours: "Monday – Saturday: 9:30 AM – 7:00 PM IST",
-    workingDaysNotice: "Sunday: Closed (WhatsApp enquiries open)"
-  },
-  socialLinks: {
-    instagram: "https://instagram.com/sanzartourz",
-    facebook: "https://facebook.com/sanzartourz",
-    whatsappChannel: "https://wa.me/919876543210",
-  },
-  about: {
-    tagline: "Boutique Travel Planning Crafted with Care",
-    shortBio: "Based in Palakkad, Kerala, Sanzar Tourz is dedicated to curating seamless holiday experiences, customized itineraries, and memorable journeys across India and global destinations.",
-    story: "Sanzar Tourz was founded with a genuine passion for travel and personal service. We believe travel is not just about visiting places, but about stepping away from routine to breathe, unwind, and create meaningful memories with family and friends. From our home in Palakkad, Kerala, we assist travellers with tailored itineraries, handpicked stays, and attentive guidance every step of the way.",
-    philosophy: "We place thoughtfulness, flexibility, and honest advice at the center of every itinerary we build.",
-    values: [
-      { title: "Personalised Travel Planning", description: "Every traveller is unique. We tailor each itinerary to match your personal interests, pacing, and group dynamics." },
-      { title: "Customised Holiday Experiences", description: "From tranquil retreats to cultural explorations, we help you shape trips that feel authentically yours." },
-      { title: "Enquiry Assistance", description: "Direct WhatsApp support and prompt responses to assist you from initial ideas through to trip completion." },
-      { title: "Flexible Travel Preferences", description: "Choose your preferred dates, hotel categories, meal preferences, and pace without rigid constraints." }
-    ]
-  }
-};
+import { siteConfig } from '../src/config/siteConfig';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   res.setHeader('Access-Control-Allow-Credentials', 'true');
@@ -67,7 +30,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
       // Auto-seed if not yet set
       if (!config) {
-        await collection.insertOne(defaultConfig);
+        await collection.insertOne({ ...siteConfig, id: 'site_config' });
         config = await collection.findOne({ id: 'site_config' });
       }
 
@@ -95,4 +58,3 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(500).json({ success: false, error: 'Failed to interact with database' });
   }
 }
-
