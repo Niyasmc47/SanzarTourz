@@ -27,14 +27,14 @@ export const siteConfig = {
   contact: {
     // WhatsApp number in international format without spaces or symbols (+91...)
     // Example: "919876543210"
-    whatsappNumber: "919876543210", // Placeholder: Change to actual WhatsApp number
-    whatsappDisplayNumber: "+91 98765 43210",
+    whatsappNumber: "919746623398", // Placeholder: Change to actual WhatsApp number
+    whatsappDisplayNumber: "+91 97466 23398",
 
     // Primary Phone Number
-    phoneNumber: "+91 98765 43210", // Placeholder: Change to actual contact number
+    phoneNumber: "+91 97466 23398", // Placeholder: Change to actual contact number
 
     // Business Email Address
-    email: "enquiry@sanzartourz.com", // Placeholder: Change to actual business email
+    email: "santourpkd@gmail.com", // Placeholder: Change to actual business email
 
     // Office Working Hours
     workingHours: "Monday – Saturday: 9:30 AM – 7:00 PM IST",
