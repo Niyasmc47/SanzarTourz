@@ -5,8 +5,6 @@ import {
   Mail, 
   MessageCircle, 
   Clock, 
-  Instagram, 
-  Facebook, 
   ShieldAlert
 } from 'lucide-react';
 import { useSite } from '../context/SiteContext';
@@ -128,7 +126,7 @@ Looking forward to your guidance!`;
               </div>
             </div>
 
-            {/* Working Hours & Socials */}
+            {/* Working Hours */}
             <div className="bg-white rounded-3xl p-6 border border-slate-200/80 shadow-xs space-y-4">
               <div className="flex items-start gap-3.5">
                 <Clock className="w-5 h-5 text-teal-600 mt-0.5 shrink-0" />
@@ -136,30 +134,6 @@ Looking forward to your guidance!`;
                   <h4 className="text-xs uppercase font-bold text-slate-500">Business Hours</h4>
                   <p className="text-sm font-semibold text-navy-950 mt-0.5">{siteConfig.contact.workingHours}</p>
                   <p className="text-xs text-slate-500 mt-0.5">{siteConfig.contact.workingDaysNotice}</p>
-                </div>
-              </div>
-
-              <div className="pt-4 border-t border-slate-100">
-                <h4 className="text-xs uppercase font-bold text-slate-500 mb-3">Connect on Social Channels</h4>
-                <div className="flex items-center gap-3">
-                  <a
-                    href={siteConfig.socialLinks.instagram}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-2 px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold transition-colors"
-                  >
-                    <Instagram className="w-4 h-4 text-pink-600" />
-                    <span>Instagram</span>
-                  </a>
-                  <a
-                    href={siteConfig.socialLinks.facebook}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-2 px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold transition-colors"
-                  >
-                    <Facebook className="w-4 h-4 text-blue-600" />
-                    <span>Facebook</span>
-                  </a>
                 </div>
               </div>
             </div>

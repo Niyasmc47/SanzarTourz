@@ -7,7 +7,7 @@ import { CustomTripFormData, TourPackage } from '../types';
 export function getActiveWhatsAppNumber(customNumber?: string): string {
   if (customNumber) return customNumber;
   try {
-    const saved = localStorage.getItem('sanzar_tourz_site_config');
+    const saved = localStorage.getItem('sanzar_tourz_site_config_v2') || localStorage.getItem('sanzar_tourz_site_config');
     if (saved) {
       const parsed = JSON.parse(saved);
       if (parsed?.contact?.whatsappNumber) {
@@ -54,6 +54,23 @@ Could you please share more details, upcoming available dates, and customized pr
  * Builds a WhatsApp message for a Customised Holiday request.
  */
 export function getCustomTripEnquiryUrl(data: CustomTripFormData, customNumber?: string): string {
+  let travellerDetails = '';
+  if (typeof data.adultsCount === 'number') {
+    const adultsText = `${data.adultsCount} ${data.adultsCount === 1 ? 'Adult' : 'Adults'}`;
+    if (data.childrenCount && data.childrenCount > 0) {
+      const childrenText = `${data.childrenCount} ${data.childrenCount === 1 ? 'Child' : 'Children'}`;
+      const validAges = (data.childAges || []).filter(Boolean);
+      const agesText = validAges.length > 0
+        ? ` (Age${validAges.length > 1 ? 's' : ''}: ${validAges.join(', ')})`
+        : '';
+      travellerDetails = `${adultsText}, ${childrenText}${agesText}`;
+    } else {
+      travellerDetails = adultsText;
+    }
+  } else {
+    travellerDetails = data.travellerCount || 'Not specified';
+  }
+
   const message = `Hello Sanzar Tourz! ✈️
 
 I would like to request a Customised Holiday plan:
@@ -63,7 +80,7 @@ I would like to request a Customised Holiday plan:
 🛫 Departure City: ${data.departureCity}
 🏝️ Preferred Destination: ${data.destination}
 📅 Tentative Travel Dates: ${data.travelDates}
-👥 Number of Travellers: ${data.travellerCount}
+👥 Number of Travellers: ${travellerDetails}
 💵 Estimated Budget: ${data.estimatedBudget ? `₹${data.estimatedBudget}` : 'Flexible'}
 📝 Specific Preferences / Notes: ${data.preferences || 'Standard leisure trip'}
 

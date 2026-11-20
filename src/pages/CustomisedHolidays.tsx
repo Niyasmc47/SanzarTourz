@@ -10,11 +10,22 @@ import {
   IndianRupee, 
   FileText, 
   Compass, 
-  ShieldCheck
+  ShieldCheck,
+  Baby
 } from 'lucide-react';
 import { CustomTripFormData } from '../types';
 import { getCustomTripEnquiryUrl } from '../utils/whatsapp';
 import { useSite } from '../context/SiteContext';
+
+const CHILD_AGE_OPTIONS = [
+  'Under 1',
+  '1',
+  '2',
+  '3',
+  '4',
+  '5',
+  '6'
+];
 
 export const CustomisedHolidays: React.FC = () => {
   const { siteConfig } = useSite();
@@ -26,12 +37,15 @@ export const CustomisedHolidays: React.FC = () => {
     departureCity: '',
     destination: '',
     travelDates: '',
+    adultsCount: 2,
+    childrenCount: 0,
+    childAges: [],
     travellerCount: '2 Adults',
     estimatedBudget: '',
     preferences: ''
   });
 
-  const [errors, setErrors] = useState<Partial<Record<keyof CustomTripFormData, string>>>({});
+  const [errors, setErrors] = useState<Record<string, string | undefined>>({});
   const [isSubmitted, setIsSubmitted] = useState(false);
 
   // Set destination if passed in query param
@@ -42,17 +56,89 @@ export const CustomisedHolidays: React.FC = () => {
     }
   }, [searchParams]);
 
+  // Helper to sync travellerCount string representation
+  const formatTravellerCount = (adults: number, children: number, ages: string[]): string => {
+    const adultStr = `${adults} ${adults === 1 ? 'Adult' : 'Adults'}`;
+    if (children > 0) {
+      const childStr = `${children} ${children === 1 ? 'Child' : 'Children'}`;
+      const validAges = ages.filter(Boolean);
+      const agesStr = validAges.length > 0 ? ` (Age${validAges.length > 1 ? 's' : ''}: ${validAges.join(', ')})` : '';
+      return `${adultStr}, ${childStr}${agesStr}`;
+    }
+    return adultStr;
+  };
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
     // Clear error on input
-    if (errors[name as keyof CustomTripFormData]) {
+    if (errors[name]) {
       setErrors((prev) => ({ ...prev, [name]: undefined }));
     }
   };
 
+  const handleAdultsChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const adults = parseInt(e.target.value, 10) || 1;
+    setFormData((prev) => ({
+      ...prev,
+      adultsCount: adults,
+      travellerCount: formatTravellerCount(adults, prev.childrenCount, prev.childAges)
+    }));
+    if (errors.adultsCount) {
+      setErrors((prev) => ({ ...prev, adultsCount: undefined }));
+    }
+  };
+
+  const handleChildrenChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const count = parseInt(e.target.value, 10) || 0;
+    setFormData((prev) => {
+      const updatedAges = [...prev.childAges];
+      if (count > updatedAges.length) {
+        while (updatedAges.length < count) {
+          updatedAges.push('');
+        }
+      } else {
+        updatedAges.length = count;
+      }
+      return {
+        ...prev,
+        childrenCount: count,
+        childAges: updatedAges,
+        travellerCount: formatTravellerCount(prev.adultsCount, count, updatedAges)
+      };
+    });
+
+    // Clear child age errors
+    setErrors((prev) => {
+      const updatedErrors = { ...prev };
+      Object.keys(updatedErrors).forEach((key) => {
+        if (key.startsWith('childAge_')) {
+          delete updatedErrors[key];
+        }
+      });
+      return updatedErrors;
+    });
+  };
+
+  const handleChildAgeChange = (index: number, age: string) => {
+    setFormData((prev) => {
+      const updatedAges = [...prev.childAges];
+      updatedAges[index] = age;
+      return {
+        ...prev,
+        childAges: updatedAges,
+        travellerCount: formatTravellerCount(prev.adultsCount, prev.childrenCount, updatedAges)
+      };
+    });
+
+    const errKey = `childAge_${index}`;
+    if (errors[errKey]) {
+      setErrors((prev) => ({ ...prev, [errKey]: undefined }));
+    }
+  };
+
   const validate = (): boolean => {
-    const newErrors: Partial<Record<keyof CustomTripFormData, string>> = {};
+    const newErrors: Record<string, string> = {};
 
     if (!formData.fullName.trim()) {
       newErrors.fullName = 'Please enter your name';
@@ -66,8 +152,15 @@ export const CustomisedHolidays: React.FC = () => {
     if (!formData.travelDates.trim()) {
       newErrors.travelDates = 'Please enter tentative travel dates or month';
     }
-    if (!formData.travellerCount.trim()) {
-      newErrors.travellerCount = 'Please indicate number of travellers';
+    if (!formData.adultsCount || formData.adultsCount < 1) {
+      newErrors.adultsCount = 'Please select at least 1 adult';
+    }
+    if (formData.childrenCount > 0) {
+      for (let i = 0; i < formData.childrenCount; i++) {
+        if (!formData.childAges[i] || !formData.childAges[i].trim()) {
+          newErrors[`childAge_${i}`] = `Please select age for Child ${i + 1}`;
+        }
+      }
     }
 
     setErrors(newErrors);
@@ -226,26 +319,112 @@ export const CustomisedHolidays: React.FC = () => {
                 </div>
 
                 <div>
-                  <label htmlFor="travellerCount" className="block text-xs font-bold uppercase tracking-wider text-navy-800 mb-1.5">
+                  <label className="block text-xs font-bold uppercase tracking-wider text-navy-800 mb-1.5">
                     Number of Travellers <span className="text-rose-500">*</span>
                   </label>
-                  <div className="relative">
-                    <Users className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
-                    <input
-                      type="text"
-                      id="travellerCount"
-                      name="travellerCount"
-                      value={formData.travellerCount}
-                      onChange={handleChange}
-                      placeholder="e.g. 2 Adults, 1 Child (Age 6)"
-                      className={`w-full pl-10 pr-4 py-2.5 text-sm rounded-xl border ${
-                        errors.travellerCount ? 'border-rose-400 bg-rose-50/20' : 'border-slate-200 bg-slate-50/40'
-                      } focus:outline-none focus:ring-2 focus:ring-teal-500/40 focus:border-teal-500`}
-                    />
+                  <div className="grid grid-cols-2 gap-3">
+                    {/* Adults Selector */}
+                    <div>
+                      <div className="relative">
+                        <Users className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+                        <select
+                          id="adultsCount"
+                          name="adultsCount"
+                          value={formData.adultsCount}
+                          onChange={handleAdultsChange}
+                          className="w-full pl-9 pr-2 py-2.5 text-sm rounded-xl border border-slate-200 bg-slate-50/40 focus:outline-none focus:ring-2 focus:ring-teal-500/40 focus:border-teal-500 text-slate-700 font-medium cursor-pointer"
+                        >
+                          {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 15, 20].map((num) => (
+                            <option key={num} value={num}>
+                              {num}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                      <p className="text-[10px] text-slate-400 mt-1">Above 6 yrs</p>
+                      {errors.adultsCount && <p className="text-xs text-rose-500 mt-1">{errors.adultsCount}</p>}
+                    </div>
+
+                    {/* Children Selector */}
+                    <div>
+                      <div className="relative">
+                        <Baby className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+                        <select
+                          id="childrenCount"
+                          name="childrenCount"
+                          value={formData.childrenCount}
+                          onChange={handleChildrenChange}
+                          className="w-full pl-9 pr-2 py-2.5 text-sm rounded-xl border border-slate-200 bg-slate-50/40 focus:outline-none focus:ring-2 focus:ring-teal-500/40 focus:border-teal-500 text-slate-700 font-medium cursor-pointer"
+                        >
+                          {[0, 1, 2, 3, 4, 5, 6].map((num) => (
+                            <option key={num} value={num}>
+                              {num}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                      <p className="text-[10px] text-slate-400 mt-1">Upto 6 yrs</p>
+                    </div>
                   </div>
-                  {errors.travellerCount && <p className="text-xs text-rose-500 mt-1">{errors.travellerCount}</p>}
                 </div>
               </div>
+
+              {/* Conditional Child Age Selection Section */}
+              {formData.childrenCount > 0 && (
+                <div className="p-4 sm:p-5 rounded-2xl bg-teal-50/60 border border-teal-200/80 space-y-3.5 transition-all">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
+                    <div className="flex items-center gap-2">
+                      <div className="w-6 h-6 rounded-full bg-teal-100 flex items-center justify-center text-teal-700">
+                        <Baby className="w-3.5 h-3.5" />
+                      </div>
+                      <span className="text-xs font-bold uppercase tracking-wider text-teal-900">
+                        Child Age Selection ({formData.childrenCount} {formData.childrenCount === 1 ? 'child' : 'children'})
+                      </span>
+                    </div>
+                    <span className="text-[11px] text-teal-700 font-medium">
+                      Helps us arrange child fares, extra beds & vehicle sizing
+                    </span>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+                    {Array.from({ length: formData.childrenCount }).map((_, idx) => {
+                      const errKey = `childAge_${idx}`;
+                      return (
+                        <div key={idx} className="bg-white p-3 rounded-xl border border-teal-200/80 shadow-2xs">
+                          <label
+                            htmlFor={`child-age-${idx}`}
+                            className="block text-xs font-semibold text-navy-900 mb-1.5"
+                          >
+                            Child {idx + 1} Age <span className="text-rose-500">*</span>
+                          </label>
+                          <select
+                            id={`child-age-${idx}`}
+                            value={formData.childAges[idx] || ''}
+                            onChange={(e) => handleChildAgeChange(idx, e.target.value)}
+                            className={`w-full px-3 py-2 text-xs rounded-lg border ${
+                              errors[errKey]
+                                ? 'border-rose-400 bg-rose-50/30 text-rose-900'
+                                : 'border-slate-200 bg-slate-50/50 text-slate-700'
+                            } focus:outline-none focus:ring-2 focus:ring-teal-500/40 focus:border-teal-500 font-medium cursor-pointer`}
+                          >
+                            <option value="">Select age</option>
+                            {CHILD_AGE_OPTIONS.map((opt) => (
+                              <option key={opt} value={opt}>
+                                {opt}
+                              </option>
+                            ))}
+                          </select>
+                          {errors[errKey] && (
+                            <p className="text-[10px] text-rose-500 mt-1">
+                              {errors[errKey]}
+                            </p>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
 
               {/* Row 4: Estimated Budget */}
               <div>

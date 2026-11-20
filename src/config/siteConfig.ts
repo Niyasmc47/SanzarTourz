@@ -37,15 +37,15 @@ export const siteConfig = {
     email: "santourpkd@gmail.com", // Placeholder: Change to actual business email
 
     // Office Working Hours
-    workingHours: "Monday – Saturday: 9:30 AM – 7:00 PM IST",
+    workingHours: "Monday – Saturday: 9:30 AM – 6:00 PM IST",
     workingDaysNotice: "Sunday: Closed (WhatsApp enquiries open)"
   },
 
   // Social Media Links
   socialLinks: {
-    instagram: "https://instagram.com/sanzartourz",
-    facebook: "https://facebook.com/sanzartourz",
-    whatsappChannel: "https://wa.me/919876543210",
+    instagram: "",
+    facebook: "",
+    whatsappChannel: "",
   },
 
   // Company Overview & Philosophy

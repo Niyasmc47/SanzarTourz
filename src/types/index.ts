@@ -39,7 +39,10 @@ export interface CustomTripFormData {
   departureCity: string;
   destination: string;
   travelDates: string;
-  travellerCount: string;
+  adultsCount: number;
+  childrenCount: number;
+  childAges: string[];
+  travellerCount?: string;
   estimatedBudget: string;
   preferences: string;
 }
@@ -63,9 +66,9 @@ export interface SiteConfig {
     workingDaysNotice: string;
   };
   socialLinks: {
-    instagram: string;
-    facebook: string;
-    whatsappChannel: string;
+    instagram?: string;
+    facebook?: string;
+    whatsappChannel?: string;
   };
   about: {
     tagline: string;

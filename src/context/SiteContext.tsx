@@ -22,7 +22,7 @@ interface SiteContextType {
 
 const SiteContext = createContext<SiteContextType | undefined>(undefined);
 
-const CONFIG_STORAGE_KEY = 'sanzar_tourz_site_config';
+const CONFIG_STORAGE_KEY = 'sanzar_tourz_site_config_v2';
 const PACKAGES_STORAGE_KEY = 'sanzar_tourz_packages';
 const PASSWORD_STORAGE_KEY = 'sanzar_admin_password';
 const AUTH_STORAGE_KEY = 'sanzar_admin_authenticated';
